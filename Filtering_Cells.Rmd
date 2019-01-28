@@ -17,18 +17,18 @@ library(locfdr)
 bra <- readRDS("bra_157k.rds")
 ```
  
-```{r filtering, fig.witdth=5, fig.height=5}
+```{r filtering, fig.width=5, fig.height=5}
 
 mito.genes <- grep(pattern = "^mt", x = rownames(x = bra@data), value = TRUE)
 percent.mito <- Matrix::colSums(bra@raw.data[mito.genes, ])/Matrix::colSums(bra@raw.data)
 
 lpm <- log(percent.mito)
-pmlfdr <-  locfdr(lpm[!is.infinite(lpm)], nulltype=2, main="log% mitochondrial")
+plot(density(lpm[!is.infinite(lpm)]), main="log% mitochondrial")
 
 ltc <- log(Matrix::colSums(bra@raw.data))
 plot(density(ltc[!is.infinite(ltc)]), main="log(total UMI)")
 
-
+plot(lpm, ltc, pch=16, cex=0.2, col="#0033FF20", xlab="log(%mitochondrial)", ylab="log(sum(UMI))")
 ```
 
 ```{r}
