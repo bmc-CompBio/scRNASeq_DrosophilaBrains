@@ -17,14 +17,8 @@ library(locfdr)
 bra <- readRDS("bra_157k.rds")
 ```
  
-```{r filtering, fig.witdth=5, fig.heght=5}
-# The number of genes and UMIs (nGene and nUMI) are automatically calculated
-# for every object by Seurat.  For non-UMI data, nUMI represents the sum of
-# the non-normalized values within a cell We calculate the percentage of
-# mitochondrial genes here and store it in percent.mito using AddMetaData.
-# We use object@raw.data since this represents non-transformed and
-# non-log-normalized counts The % of UMI mapping to MT-genes is a common
-# scRNA-seq QC metric.
+```{r filtering, fig.witdth=5, fig.height=5}
+
 mito.genes <- grep(pattern = "^mt", x = rownames(x = bra@data), value = TRUE)
 percent.mito <- Matrix::colSums(bra@raw.data[mito.genes, ])/Matrix::colSums(bra@raw.data)
 
