@@ -1,0 +1,43 @@
+---
+title: "Filtering cells"
+author: "tobiasst"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document:
+    df_print: paged
+    code_folding: hide
+---
+
+```{r init, message=F, warning=F}
+library(Seurat)
+library(locfdr)
+```
+
+```{r}
+bra <- readRDS("bra_157k.rds")
+```
+ 
+```{r filtering, fig.witdth=5, fig.heght=5}
+# The number of genes and UMIs (nGene and nUMI) are automatically calculated
+# for every object by Seurat.  For non-UMI data, nUMI represents the sum of
+# the non-normalized values within a cell We calculate the percentage of
+# mitochondrial genes here and store it in percent.mito using AddMetaData.
+# We use object@raw.data since this represents non-transformed and
+# non-log-normalized counts The % of UMI mapping to MT-genes is a common
+# scRNA-seq QC metric.
+mito.genes <- grep(pattern = "^mt", x = rownames(x = bra@data), value = TRUE)
+percent.mito <- Matrix::colSums(bra@raw.data[mito.genes, ])/Matrix::colSums(bra@raw.data)
+
+lpm <- log(percent.mito)
+pmlfdr <-  locfdr(lpm[!is.infinite(lpm)], nulltype=2, main="log% mitochondrial")
+
+ltc <- log(Matrix::colSums(bra@raw.data))
+plot(density(ltc[!is.infinite(ltc)]), main="log(total UMI)")
+
+
+```
+
+```{r}
+sessionInfo()
+```
+
